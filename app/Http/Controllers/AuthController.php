@@ -47,14 +47,21 @@ class AuthController extends Controller
             'username'  => 'required|min:4',
     		'email'		=> 'required|email|unique:users',
             'password'  => 'min:6|required_with:password_confirmation|same:password_confirmation',
-            'password_confirmation' => 'min:6'
+            'password_confirmation' => 'min:6',
+            'long'      => 'required',
+            'lat'       => 'required',
     	]);
 
-        $data=array('name'       => $input->name,
-                    'username'   => $input->username,
-                    'email'      => $input->email,
-                    'password'   => bcrypt($input->password),
-                    );
+        $loc = array('long' => $input->long,
+                     'lat' => $input->lat,
+        );
+
+        $data=array('name'          => $input->name,
+                    'username'      => $input->username,
+                    'email'         => $input->email,
+                    'password'      => bcrypt($input->password),
+                    'created_loc'   => json_encode($loc)
+        );
 
         User::create($data);
 

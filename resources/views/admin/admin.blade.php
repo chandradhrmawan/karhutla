@@ -20,6 +20,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   {{-- leaflet --}}
   <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}">
   <script src="{{ asset('leaflet/leaflet.js') }}"></script>
+  </script>
   
 </head>
 <body class="hold-transition sidebar-mini">

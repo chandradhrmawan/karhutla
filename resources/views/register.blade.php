@@ -18,6 +18,21 @@
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
+<script type="text/javascript">
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+
+    function showPosition(position) {
+      var lat = position.coords.latitude;
+      var long =  position.coords.longitude;
+      document.getElementById("lat").value = lat;
+      document.getElementById("long").value = long;
+    }
+
+</script>
 <body class="hold-transition register-page">
 <div class="register-box">
   <div class="register-logo">
@@ -30,6 +45,8 @@
 
       <form action="{{ route('register') }} " method="post">
         @csrf
+        <input type="hidden" name="long" id="long" value="">
+        <input type="hidden" name="lat" id="lat" value="">
         <div class="input-group mb-3">
           <input type="text" name="name" value="{{ old('name') }}" class="form-control" placeholder="Full name">
           @if($errors->has('name'))
