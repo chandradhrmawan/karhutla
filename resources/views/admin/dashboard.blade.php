@@ -2,9 +2,6 @@
 
 @section('content')
 
-{{--  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
-   Make sure you put this AFTER Leaflet's CSS
- <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script> --}}
  <script src="{{ asset('geojson_id.js') }}"></script>
 
    <style type="text/css">
@@ -12,37 +9,213 @@
    </style>
 
 
-<div class="row">
-  <div class="col-md-12">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
 
-  	 <div id="mapid"></div>
+      <div class="card card-info">
 
-  	 <script type="text/javascript">
-  	 	var long = 113.9213257;
-  	 	var lat  = -0.789275;
-  	 	var zoom = 5;
-  	 	var mymap = L.map('mapid').setView([lat, long], zoom);
-  	 	var apikey = 'pk.eyJ1IjoiY2hhbmRyYWRhcm1hd2FuMTciLCJhIjoiY2s5OGp6MWxxMDJ6bDNtbW5ndWtpeTR1MiJ9.dOWewSSFZpkoosXlkf99Pg';
-  	 	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-	    	maxZoom: 18,
-		    id: 'mapbox/light-v9',
-		    tileSize: 512,
-		    zoomOffset: -1,
-		    accessToken: apikey
-		}).addTo(mymap);
-
-  	 	//add marker
-  	 	var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
-  	 	marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-
-  	 	L.geoJson(indoData).addTo(mymap);
-
-  	 </script>
-    
-    
+          <div class="card-header">
+              <h3 class="card-title">Map</h3>
+          </div>
+          <div class="card-body">
+  	         <div id="mapid"></div>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
 
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
 
+      <div class="card card-info">
+
+          <div class="card-header">
+              <h3 class="card-title">Data</h3>
+          </div>
+          <div class="card-body">
+            
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                  <th>CSS grade</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 4.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td> 4</td>
+                  <td>X</td>
+                </tr>
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 5.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td>5</td>
+                  <td>C</td>
+                </tr>
+                <tr>
+                  <td>Misc</td>
+                  <td>PSP browser</td>
+                  <td>PSP</td>
+                  <td>-</td>
+                  <td>C</td>
+                </tr>
+                <tr>
+                  <td>Other browsers</td>
+                  <td>All others</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>U</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                  <th>CSS grade</th>
+                </tr>
+                </tfoot>
+              </table>
+            {{-- </div> --}}
+            <!-- /.card-body -->
+          </div>
+
+
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-success">
+        <div class="card-header">
+          <h3 class="card-title">Bar Chart</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="{{ asset('lte/plugins/jquery/jquery.min.js') }}"></script>
+<!-- ChartJS -->
+<script src="{{ asset('lte/plugins/chart.js/Chart.min.js')}}"></script>
+<script type="text/javascript">
+$(function () {
+  $('#example1').DataTable({
+  "paging": true,
+  "lengthChange": true,
+  "searching": true,
+  "ordering": true,
+  "info": true,
+  "autoWidth": true,
+  "responsive": true,
+  });
+});
+
+/*start map*/
+var long = 113.9213257;
+var lat  = -0.789275;
+var zoom = 5;
+var mymap = L.map('mapid').setView([lat, long], zoom);
+var apikey = 'pk.eyJ1IjoiY2hhbmRyYWRhcm1hd2FuMTciLCJhIjoiY2s5OGp6MWxxMDJ6bDNtbW5ndWtpeTR1MiJ9.dOWewSSFZpkoosXlkf99Pg';
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  maxZoom: 18,
+  id: 'mapbox/light-v9',
+  tileSize: 512,
+  zoomOffset: -1,
+  accessToken: apikey
+}).addTo(mymap);
+
+//add marker
+var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
+marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+
+L.geoJson(indoData).addTo(mymap);
+/*end map*/
+
+/*
+    chart area
+*/
+var areaChartData = {
+labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+datasets: [
+  {
+    label               : 'Digital Goods',
+    backgroundColor     : 'rgba(60,141,188,0.9)',
+    borderColor         : 'rgba(60,141,188,0.8)',
+    pointRadius          : false,
+    pointColor          : '#3b8bba',
+    pointStrokeColor    : 'rgba(60,141,188,1)',
+    pointHighlightFill  : '#fff',
+    pointHighlightStroke: 'rgba(60,141,188,1)',
+    data                : [28, 48, 40, 19, 86, 27, 90]
+  },
+  {
+    label               : 'Electronics',
+    backgroundColor     : 'rgba(210, 214, 222, 1)',
+    borderColor         : 'rgba(210, 214, 222, 1)',
+    pointRadius         : false,
+    pointColor          : 'rgba(210, 214, 222, 1)',
+    pointStrokeColor    : '#c1c7d1',
+    pointHighlightFill  : '#fff',
+    pointHighlightStroke: 'rgba(220,220,220,1)',
+    data                : [65, 59, 80, 81, 56, 55, 40]
+  },
+]
+}
+
+var barChartCanvas = $('#barChart').get(0).getContext('2d')
+var barChartData = jQuery.extend(true, {}, areaChartData)
+var temp0 = areaChartData.datasets[0]
+var temp1 = areaChartData.datasets[1]
+barChartData.datasets[0] = temp1
+barChartData.datasets[1] = temp0
+
+var barChartOptions = {
+  responsive              : true,
+  maintainAspectRatio     : false,
+  datasetFill             : false
+}
+
+var barChart = new Chart(barChartCanvas, {
+  type: 'bar', 
+  data: barChartData,
+  options: barChartOptions
+});
+
+</script>
 
 @endsection

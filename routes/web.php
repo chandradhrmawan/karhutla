@@ -29,4 +29,6 @@ Route::get('/home','AuthController@dashboard')->name('home')->middleware('auth')
 
 Route::get('/logout','AuthController@logout')->name('logout')->middleware('auth');
 
+Route::get('/report','ReportController@index')->name('report')->middleware('auth');
+
 // Route::get('/login','LoginController@index');
