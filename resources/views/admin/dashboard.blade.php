@@ -4,14 +4,23 @@
 
  <script src="{{ asset('geojson_id.js') }}"></script>
 
-   <style type="text/css">
-   		#mapid { height: 500px; }
-   </style>
+<style type="text/css">
+#map { height: 500px; }
+
+.my-custom-scrollbar {
+  position: relative;
+  height: 500px;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+</style>
 
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-9">
 
       <div class="card card-info">
 
@@ -19,9 +28,35 @@
               <h3 class="card-title">Map</h3>
           </div>
           <div class="card-body">
-  	         <div id="mapid"></div>
+  	         <div id="map"></div>
           </div>
       </div>
+    </div>
+
+    <div class="col-md-3">
+       <div class="card card-info">
+       <div class="card-header">
+          <h3 class="card-title">Colaborator</h3>
+        </div>
+         <div class="card-body">
+          <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
+          <table class="table table-bordered table-striped mb-0">
+            <tr>
+              <th>Nama</th>
+              <th>Info</th>
+              <th>Waktu</th>
+            </tr>
+            @for ($i = 0; $i < 10; $i++)
+            <tr>
+              <td>Dede</td>
+              <td>Terjadi Kebakaran Hebat di hutan musi</td>
+              <td>20:00 00:00</td>
+            </tr>
+            @endfor
+          </table>
+          </div>
+          </div>
+        </div>
     </div>
   </div>
 </div>
@@ -146,7 +181,7 @@ $(function () {
 });
 
 /*start map*/
-var long = 113.9213257;
+/*var long = 113.9213257;
 var lat  = -0.789275;
 var zoom = 5;
 var mymap = L.map('mapid').setView([lat, long], zoom);
@@ -158,12 +193,57 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
   zoomOffset: -1,
   accessToken: apikey
 }).addTo(mymap);
-
+*/
 //add marker
-var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
-marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+// var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
+// marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
 
-L.geoJson(indoData).addTo(mymap);
+
+/*add cluster marker*/
+var apikey = 'pk.eyJ1IjoiY2hhbmRyYWRhcm1hd2FuMTciLCJhIjoiY2s5OGp6MWxxMDJ6bDNtbW5ndWtpeTR1MiJ9.dOWewSSFZpkoosXlkf99Pg';
+var cloudmade = new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  maxZoom: 18,
+  id: 'mapbox/light-v9',
+  tileSize: 512,
+  zoomOffset: -1,
+  accessToken: apikey
+});
+
+var lat  = -0.789275;
+var long = 113.9213257;
+var latlng = new L.LatLng(lat, long);
+
+var map = new L.Map('map', {center: latlng, zoom: 5, layers: [cloudmade]});
+
+var markers = new L.MarkerClusterGroup();
+var markersList = [];
+
+function populate() {
+  for (var i = 0; i < 100; i++) {
+    var m = new L.Marker(getRandomLatLng(map));
+    markersList.push(m);
+    markers.addLayer(m);
+  }
+  return false;
+}
+
+function getRandomLatLng(map) {
+  var bounds = map.getBounds(),
+    southWest = bounds.getSouthWest(),
+    northEast = bounds.getNorthEast(),
+    lngSpan = northEast.lng - southWest.lng,
+    latSpan = northEast.lat - southWest.lat;
+
+  return new L.LatLng(
+      southWest.lat + latSpan * Math.random(),
+      southWest.lng + lngSpan * Math.random());
+}
+
+populate();
+map.addLayer(markers);
+/*end cluster marker*/
+
+// L.geoJson(indoData).addTo(map);
 /*end map*/
 
 /*

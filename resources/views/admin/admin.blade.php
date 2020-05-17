@@ -23,6 +23,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
   {{-- leaflet --}}
   <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}">
   <script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+  {{-- marker cluster --}}
+  <link rel="stylesheet" href="{{ asset('leaflet/MarkerCluster.css') }}">
+  <link rel="stylesheet" href="{{ asset('leaflet/MarkerCluster.Default.css') }}">
+  <script src="{{ asset('leaflet/leaflet.markercluster-src.js') }}"></script>
+
   </script>
   
 </head>
