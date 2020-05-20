@@ -16,6 +16,33 @@ class AuthController extends Controller
     public function dashboard()
     {
         $data['page_title'] = 'Dashboard';
+        $data['colabolator'] = DB::table('pelaporan')->get();
+        $year = 2020;
+        $sql = "SELECT ";
+        for ($i=1; $i <=12; $i++) { 
+            $sql .= "(SELECT count(*) from pelaporan where YEAR(tgl_pelaporan) = '".$year."' AND MONTH(tgl_pelaporan) = '".$i."' ) AS '".$i."',";
+        }
+        $sql = substr($sql, 0, -1);
+        $sql .= "FROM DUAL";
+        
+        $data['bar_char'] = DB::select($sql);
+
+         // print_r($data['bar_char']);die;
+
+        foreach ($data['bar_char'] as $key => $value) {
+            foreach ($value as $keyx => $valuex) {
+            // print_r($valuex);
+            $data['bar_chart'][] = $valuex;
+            }
+        }
+
+        $data['result_bar'] = json_encode($data['bar_chart']);
+// die;
+        /*echo "<pre>";
+        print_r();
+        die();*/
+       
+        
         return view('admin/dashboard',$data);
         // return view('home');
     }

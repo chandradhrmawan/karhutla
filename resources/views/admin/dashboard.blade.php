@@ -15,6 +15,10 @@
 .table-wrapper-scroll-y {
   display: block;
 }
+
+.form-control{
+  border-radius: 0px !important;
+}
 </style>
 
 
@@ -46,13 +50,13 @@
               <th>Info</th>
               <th>Waktu</th>
             </tr>
-            @for ($i = 0; $i < 10; $i++)
+            @foreach($colabolator as $key => $value)
             <tr>
-              <td>Dede</td>
-              <td>Terjadi Kebakaran Hebat di hutan musi</td>
-              <td>20:00 00:00</td>
+              <td>{{$value->first_name}}</td>
+              <td>{{$value->keterangan}}</td>
+              <td>{{$value->tgl_pelaporan}}</td>
             </tr>
-            @endfor
+            @endforeach
           </table>
           </div>
           </div>
@@ -64,70 +68,73 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
+      <div class="card card-info">
+        <div class="card-header">
+          <h3 class="card-title">Bar Chart Pelaporan</h3>
+
+          {{-- <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+          </div> --}}
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <div class="col-md-2" style="float: right;">
+              <select class="form-control">
+                <option>{{date('Y')}}</option>
+              </select>
+            </div>
+            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
 
       <div class="card card-info">
 
           <div class="card-header">
-              <h3 class="card-title">Data</h3>
+              <h3 class="card-title">Data Detail Colabolator</h3>
           </div>
           <div class="card-body">
             
             <!-- /.card-header -->
             <div class="card-body">
+              <div class="table-responsive">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th>Rendering engine</th>
-                  <th>Browser</th>
-                  <th>Platform(s)</th>
-                  <th>Engine version</th>
-                  <th>CSS grade</th>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Tanggal Pelaporan</th>
+                  <th>Longitude</th>
+                  <th>Latitude</th>
+                  <th>Lokasi Foto</th>
+                  <th>Keterangan</th>
                 </tr>
                 </thead>
                 <tbody>
+                @foreach($colabolator as $key => $value)
                 <tr>
-                  <td>Trident</td>
-                  <td>Internet
-                    Explorer 4.0
-                  </td>
-                  <td>Win 95+</td>
-                  <td> 4</td>
-                  <td>X</td>
+                  <td>{{$key+1}}</td>
+                  <td>{{$value->first_name.' '.$value->last_name}}</td>
+                  <td>{{$value->tgl_pelaporan}}</td>
+                  <td>{{$value->longitude_foto}}</td>
+                  <td>{{$value->latitude_foto}}</td>
+                  <td>{{$value->lokasi_foto}}</td>
+                  <td>{{$value->keterangan}}</td>
                 </tr>
-                <tr>
-                  <td>Trident</td>
-                  <td>Internet
-                    Explorer 5.0
-                  </td>
-                  <td>Win 95+</td>
-                  <td>5</td>
-                  <td>C</td>
-                </tr>
-                <tr>
-                  <td>Misc</td>
-                  <td>PSP browser</td>
-                  <td>PSP</td>
-                  <td>-</td>
-                  <td>C</td>
-                </tr>
-                <tr>
-                  <td>Other browsers</td>
-                  <td>All others</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>U</td>
-                </tr>
+                @endforeach
                 </tbody>
-                <tfoot>
-                <tr>
-                  <th>Rendering engine</th>
-                  <th>Browser</th>
-                  <th>Platform(s)</th>
-                  <th>Engine version</th>
-                  <th>CSS grade</th>
-                </tr>
-                </tfoot>
               </table>
+              <div class="table-responsive">
             {{-- </div> --}}
             <!-- /.card-body -->
           </div>
@@ -138,30 +145,10 @@
     </div>
   </div>
 </div>
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card card-success">
-        <div class="card-header">
-          <h3 class="card-title">Bar Chart</h3>
-
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart">
-            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-          </div>
-        </div>
-        <!-- /.card-body -->
-      </div>
-    </div>
-  </div>
 </div>
+</div>
+
+
 
 <!-- jQuery -->
 <script src="{{ asset('lte/plugins/jquery/jquery.min.js') }}"></script>
@@ -218,31 +205,28 @@ var map = new L.Map('map', {center: latlng, zoom: 5, layers: [cloudmade]});
 var markers = new L.MarkerClusterGroup();
 var markersList = [];
 
-function populate() {
-  for (var i = 0; i < 100; i++) {
-    var m = new L.Marker(getRandomLatLng(map));
-    markersList.push(m);
-    markers.addLayer(m);
+/*get data user report*/
+var url = location.origin+'/get_report_data';
+$.ajax({
+  url:url,
+  method:"GET",
+  headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+  },
+  dataType:"json",
+  success:function(data)
+  { 
+      $.each( data, function( key, value ) {
+        var m = new L.Marker(new L.LatLng(value.latitude_foto,value.longitude_foto));
+        markersList.push(m);
+        markers.addLayer(m);
+      });
   }
-  return false;
-}
+});
 
-function getRandomLatLng(map) {
-  var bounds = map.getBounds(),
-    southWest = bounds.getSouthWest(),
-    northEast = bounds.getNorthEast(),
-    lngSpan = northEast.lng - southWest.lng,
-    latSpan = northEast.lat - southWest.lat;
 
-  return new L.LatLng(
-      southWest.lat + latSpan * Math.random(),
-      southWest.lng + lngSpan * Math.random());
-}
-
-populate();
 map.addLayer(markers);
 /*end cluster marker*/
-
 // L.geoJson(indoData).addTo(map);
 /*end map*/
 
@@ -250,10 +234,10 @@ map.addLayer(markers);
     chart area
 */
 var areaChartData = {
-labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+labels  : ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
 datasets: [
   {
-    label               : 'Digital Goods',
+    label               : 'Data Pelaporan',
     backgroundColor     : 'rgba(60,141,188,0.9)',
     borderColor         : 'rgba(60,141,188,0.8)',
     pointRadius          : false,
@@ -261,28 +245,18 @@ datasets: [
     pointStrokeColor    : 'rgba(60,141,188,1)',
     pointHighlightFill  : '#fff',
     pointHighlightStroke: 'rgba(60,141,188,1)',
-    data                : [28, 48, 40, 19, 86, 27, 90]
-  },
-  {
-    label               : 'Electronics',
-    backgroundColor     : 'rgba(210, 214, 222, 1)',
-    borderColor         : 'rgba(210, 214, 222, 1)',
-    pointRadius         : false,
-    pointColor          : 'rgba(210, 214, 222, 1)',
-    pointStrokeColor    : '#c1c7d1',
-    pointHighlightFill  : '#fff',
-    pointHighlightStroke: 'rgba(220,220,220,1)',
-    data                : [65, 59, 80, 81, 56, 55, 40]
-  },
+    // data                : [28, 48, 40, 19, 86, 27, 90, 20, 15, 45, 35, 60]
+    data  : {{$result_bar}}
+  }
 ]
 }
 
 var barChartCanvas = $('#barChart').get(0).getContext('2d')
 var barChartData = jQuery.extend(true, {}, areaChartData)
 var temp0 = areaChartData.datasets[0]
-var temp1 = areaChartData.datasets[1]
-barChartData.datasets[0] = temp1
-barChartData.datasets[1] = temp0
+// var temp1 = areaChartData.datasets[1]
+// barChartData.datasets[0] = temp1
+barChartData.datasets[0] = temp0
 
 var barChartOptions = {
   responsive              : true,

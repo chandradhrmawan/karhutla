@@ -70,26 +70,8 @@
             var lokasi_foto = $('#lokasi_foto').val();
             var path_foto = $('#path_foto').val();
 
-            let param = [
-                ['first_name', first_name],
-                ['last_name', last_name],
-                ['email', email],
-                ['phone', phone],
-                ['tipe_alamat', tipe_alamat],
-                ['long_sistem', long_sistem],
-                ['lat_sistem', lat_sistem],
-                ['alamat_sistem', alamat_sistem],
-                ['provinsi', provinsi],
-                ['kabupaten', kabupaten],
-                ['kecamatan', kecamatan],
-                ['kelurahan', kelurahan],
-                ['longitude_foto', longitude_foto],
-                ['latitude_foto', latitude_foto],
-                ['lokasi_foto', lokasi_foto],
-                ['path_foto', path_foto]
-            ];
 
-            console.log(param);
+            var data_form = $("#signup-form").serialize();
 
             var url = location.origin+'/submit_form';
                $.ajax({
@@ -98,7 +80,7 @@
                 headers: {
                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                data:param,
+                data:data_form,
                 dataType:"json",
                 /*contentType: false,
                 cache: false,
@@ -108,12 +90,12 @@
                 },
                 success:function(data)
                 {
-                 // $('#deskripsi_foto').html(data);
-                  // generate_lokasi_foto();
+                 alert(data);
+                 window.location.replace(location.origin+'/home');
                 }
                });
 
-            alert('Submited');
+            
 
 
         },

@@ -34,6 +34,8 @@ Route::get('/report','ReportController@index')->name('report')->middleware('auth
 Route::get('/get_kabupaten/{id_prov}','ReportController@get_kabupaten');
 Route::get('/get_kecamatan/{id_kab}','ReportController@get_kecamatan');
 Route::get('/get_kelurahan/{id_kec}','ReportController@get_kelurahan');
+Route::get('/get_report_data','ReportController@get_report_data');
+
 Route::post('/read_image','ReportController@read_image');
 Route::post('/submit_form','ReportController@submit_form');
 

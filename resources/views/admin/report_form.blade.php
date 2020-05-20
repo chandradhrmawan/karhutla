@@ -32,6 +32,10 @@
 </head>
 
 <script type="text/javascript">
+  /*
+    api untuk mendapatkan long lat berdarkan inputan alamat
+    https://api.opencagedata.com/geocode/v1/json?q=JAKARTA&key=52cf5f86415446a38994831d7bae1dae
+  */
   $(document).ready(function() {
     {{-- get user long lat --}}
     if (navigator.geolocation) {
@@ -315,7 +319,7 @@
                         <div class="fieldset-content">
                             <div class="form-group">
                                 <label for="find_bank" class="form-label">Alamat Anda</label>
-                                  <select  class="form-control" id="tipe_alamat" onchange="change_type_address(this.value)">
+                                  <select  class="form-control" name="tipe_alamat" id="tipe_alamat" onchange="change_type_address(this.value)">
                                     <option value="0">--Pilih Tipe Alamat--</option>
                                     <option value="sistem">Sistem</option>
                                     <option value="manual">Manual</option>
@@ -339,7 +343,7 @@
                                   <div class="form-row">
                                     <div class="form-group col-md-6">
                                       <label>Provinsi</label>
-                                      <select class="form-control" id="provinsi" onchange="change_prov(this.value)">
+                                      <select class="form-control" name="provinsi" id="provinsi" onchange="change_prov(this.value)">
                                         @foreach($prov as $key => $value)
                                           <option value="{{$value->id_prov}}"> {{$value->nama}} </option>
                                         @endforeach
@@ -347,19 +351,19 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                       <label>Kota / Kabupaten</label>
-                                      <select class="form-control" id="kabupaten" onchange="change_kab(this.value)">
+                                      <select class="form-control" name="kabupaten" id="kabupaten" onchange="change_kab(this.value)">
                                       </select>
                                     </div>
                                   </div>
                                   <div class="form-row">
                                     <div class="form-group col-md-6">
                                       <label>Kecamatan</label>
-                                      <select class="form-control" id="kecamatan" onchange="change_kec(this.value)">
+                                      <select class="form-control" name="kecamatan" id="kecamatan" onchange="change_kec(this.value)">
                                       </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                       <label>Kelurahan</label>
-                                      <select class="form-control" id="kelurahan">
+                                      <select class="form-control" name="kelurahan" id="kelurahan">
                                       </select>
                                     </div>
                                   </div>

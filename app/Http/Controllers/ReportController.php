@@ -149,12 +149,53 @@ class ReportController extends Controller
                         <input type="text" name="lokasi_foto" class="form-control" id="lokasi_foto">
                         <input type="hidden" name="path_foto" class="form-control" id="path_foto" value="'.$path_foto.'">
                       </div>
-                </div>';
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label>Keterangan</label>
+                        <input type="text" name="keterangan" class="form-control" id="keterangan">
+                      </div>
+                    </div>';
         return $html;
     }
 
     public function submit_form(Request $input)
     {
-        dd($input);
+        $uid = Auth::user()->id;
+        $data=array('id_user'        => $uid,
+                    'first_name'     => $input->first_name,
+                    'last_name'      => $input->last_name,
+                    'email'          => $input->email,
+                    'phone'          => $input->phone,
+                    'tipe_alamat'    => $input->tipe_alamat,
+                    'alamat_sistem'  => $input->alamat_sistem,
+                    'long_sistem'    => $input->long_sistem,
+                    'lat_sistem'     => $input->lat_sistem,
+                    'provinsi'       => $input->provinsi,
+                    'kabupaten'      => $input->kabupaten,
+                    'kecamatan'      => $input->kecamatan,
+                    'kelurahan'      => $input->kelurahan,
+                    'longitude_foto' => $input->longitude_foto,
+                    'latitude_foto'  => $input->latitude_foto,
+                    'lokasi_foto'    => $input->lokasi_foto,
+                    'path_foto'      => $input->path_foto,
+                    'keterangan'     => $input->keterangan,
+                    'tgl_pelaporan'  => date('Y-m-d H:i:s')
+        );
+
+        $insert = DB::table('pelaporan')->insert($data);
+
+        if($insert){
+            echo json_encode("Suskes Simpan Data");
+        }else{
+            echo json_encode("Gagal");
+        }
+    }
+
+    public function get_report_data()
+    {
+        $data = DB::table('pelaporan')->get();
+        echo json_encode($data);
+
     }
 }
