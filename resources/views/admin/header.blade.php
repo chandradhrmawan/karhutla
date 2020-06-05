@@ -16,18 +16,21 @@
             <a href="{{ route('home') }}" class="nav-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="{{ route('report') }}" class="nav-link">Submit Report</a>
+            {{-- <a href="{{ route('report') }}" class="nav-link">Submit Report</a> --}}
+            <a href="#" class="nav-link" onclick="modal_form()">Submit Report</a>
           </li>
-          {{-- <li class="nav-item dropdown">
-            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Dropdown</a>
+          <li class="nav-item">
+            <a href="{{ route('riwayat_lapor', ['id_user' => Auth::user()->id]) }}" class="nav-link">Riwayat Pelaporan</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Pengaturan</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-              <li><a href="#" class="dropdown-item">Some action </a></li>
-              <li><a href="#" class="dropdown-item">Some other action</a></li>
+              <li><a href="{{ route('riwayat_lapor', ['id_user' => Auth::user()->id]) }}" class="dropdown-item">Kelola Pelaporan </a></li>
+              <li><a href="{{ route('master_user') }}" class="dropdown-item">Kelola Pengguna </a></li>
+              <li><a href="{{ route('master_data') }}" class="dropdown-item">Kelola Master Data</a></li>
 
-              <li class="dropdown-divider"></li>
-
-             
-              <li class="dropdown-submenu dropdown-hover">
+              {{-- <li class="dropdown-divider"></li> 
+                <li class="dropdown-submenu dropdown-hover">
                 <a id="dropdownSubMenu2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Hover for action</a>
                 <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
                   <li>
@@ -47,10 +50,10 @@
                   <li><a href="#" class="dropdown-item">level 2</a></li>
                   <li><a href="#" class="dropdown-item">level 2</a></li>
                 </ul>
-              </li>
+              </li> --}}
               
             </ul>
-          </li> --}}
+          </li>
         </ul>
 
         <!-- SEARCH FORM -->

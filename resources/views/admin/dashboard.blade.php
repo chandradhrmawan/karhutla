@@ -7,6 +7,8 @@
 <style type="text/css">
 #map { height: 500px; }
 
+#map_m { position:absolute; top:0px; bottom:0px; width:100%; }
+
 .my-custom-scrollbar {
   position: relative;
   height: 500px;
@@ -52,7 +54,7 @@
             </tr>
             @foreach($colabolator as $key => $value)
             <tr>
-              <td>{{$value->first_name}}</td>
+              <td>{{$value->name}}</td>
               <td>{{$value->keterangan}}</td>
               <td>{{$value->tgl_pelaporan}}</td>
             </tr>
@@ -113,23 +115,27 @@
                 <tr>
                   <th>No</th>
                   <th>Nama</th>
+                  <th>Alamat Pelapor</th>
                   <th>Tanggal Pelaporan</th>
                   <th>Longitude</th>
                   <th>Latitude</th>
                   <th>Lokasi Foto</th>
                   <th>Keterangan</th>
+                  <th>Photo</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($colabolator as $key => $value)
                 <tr>
                   <td>{{$key+1}}</td>
-                  <td>{{$value->first_name.' '.$value->last_name}}</td>
+                  <td>{{$value->name}}</td>
+                  <td>{{$value->alamat}}</td>
                   <td>{{$value->tgl_pelaporan}}</td>
-                  <td>{{$value->longitude_foto}}</td>
-                  <td>{{$value->latitude_foto}}</td>
-                  <td>{{$value->lokasi_foto}}</td>
+                  <td>{{$value->geometry_lng}}</td>
+                  <td>{{$value->geometry_lat}}</td>
+                  <td>{{$value->geometry_desc}}</td>
                   <td>{{$value->keterangan}}</td>
+                  <td><img src="{{ asset($value->path_foto) }}" width="100" height="100"></td>
                 </tr>
                 @endforeach
                 </tbody>
@@ -148,12 +154,43 @@
 </div>
 </div>
 
+<div id="modal_form" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="wizard-title">Campaign Wizard</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container">
+          <div id='map_m'></div>
+        </div>
+      </div>
+     
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" id="btn-act" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <!-- jQuery -->
 <script src="{{ asset('lte/plugins/jquery/jquery.min.js') }}"></script>
 <!-- ChartJS -->
 <script src="{{ asset('lte/plugins/chart.js/Chart.min.js')}}"></script>
+
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://tiles.locationiq.com/v2/js/liq-styles-ctrl-gl.js?v=0.1.6'></script>
+<link href='https://tiles.locationiq.com/v2/css/liq-styles-ctrl-gl.css?v=0.1.6' rel='stylesheet' />
+
 <script type="text/javascript">
 $(function () {
   $('#example1').DataTable({
@@ -184,6 +221,10 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 //add marker
 // var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
 // marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+/*var popup = L.popup()
+    .setLatLng([51.5, -0.09])
+    .setContent("I am a standalone popup.")
+    .openOn(mymap);*/
 
 
 /*add cluster marker*/
@@ -206,7 +247,7 @@ var markers = new L.MarkerClusterGroup();
 var markersList = [];
 
 /*get data user report*/
-var url = location.origin+'/get_report_data';
+var url = location.origin+'/get_report_conf';
 $.ajax({
   url:url,
   method:"GET",
@@ -217,9 +258,18 @@ $.ajax({
   success:function(data)
   { 
       $.each( data, function( key, value ) {
-        var m = new L.Marker(new L.LatLng(value.latitude_foto,value.longitude_foto));
-        markersList.push(m);
-        markers.addLayer(m);
+
+        for(i=1; i<=value.confident; i++){
+
+          // var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
+          // marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+
+          var m = new L.Marker(new L.LatLng(value.geometry_lat,value.geometry_lng));
+          m.bindPopup("<b>Admin321</b><br>Jakarta.");
+          markersList.push(m);
+          markers.addLayer(m);
+        }
+      
       });
   }
 });

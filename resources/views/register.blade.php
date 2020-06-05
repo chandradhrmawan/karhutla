@@ -30,6 +30,33 @@
       var long =  position.coords.longitude;
       document.getElementById("lat").value = lat;
       document.getElementById("long").value = long;
+      generate_lokasi_foto(lat,long);
+
+    }
+
+    function generate_lokasi_foto(lat,long)
+    {
+      var url = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+long+"&localityLanguage=id";
+      $.ajax(
+       {
+          type: "GET",
+          dataType: "json",
+          url: url,
+          success: function(ress) 
+          { 
+            var alamat = [];
+            $.each( ress.localityInfo.administrative, function( key, value ) {
+                 alamat.push(value.name);
+            });
+            var full_add = alamat.toString();
+            console.log(full_add);
+            $('#lokasi_foto').val(full_add);
+          },
+          error: function(error)
+          {
+            alert(error);
+          }
+       });
     }
 
 </script>
@@ -47,6 +74,7 @@
         @csrf
         <input type="hidden" name="long" id="long" value="">
         <input type="hidden" name="lat" id="lat" value="">
+        <input type="hidden" name="lokasi_foto" id="lokasi_foto" value="">
         <div class="input-group mb-3">
           <input type="text" name="name" value="{{ old('name') }}" class="form-control" placeholder="Full name">
           @if($errors->has('name'))
@@ -77,6 +105,17 @@
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+         <div class="input-group mb-3">
+          <input type="number" name="no_telp" value="{{ old('no_telp') }}" class="form-control" placeholder="No Telp">
+          @if($errors->has('no_telp'))
+            no_telp error
+          @endif
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-phone"></span>
             </div>
           </div>
         </div>

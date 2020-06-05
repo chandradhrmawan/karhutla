@@ -27,8 +27,6 @@ class AuthController extends Controller
         
         $data['bar_char'] = DB::select($sql);
 
-         // print_r($data['bar_char']);die;
-
         foreach ($data['bar_char'] as $key => $value) {
             foreach ($value as $keyx => $valuex) {
             // print_r($valuex);
@@ -37,14 +35,8 @@ class AuthController extends Controller
         }
 
         $data['result_bar'] = json_encode($data['bar_chart']);
-// die;
-        /*echo "<pre>";
-        print_r();
-        die();*/
-       
         
         return view('admin/dashboard',$data);
-        // return view('home');
     }
 
     public function postLogin(Request $input)
@@ -70,13 +62,15 @@ class AuthController extends Controller
     {
 
     	$this->validate($input, [
-    		'name' 		=> 'required|min:4',
-            'username'  => 'required|min:4',
-    		'email'		=> 'required|email|unique:users',
-            'password'  => 'min:6|required_with:password_confirmation|same:password_confirmation',
+    		'name' 		            => 'required|min:4',
+            'username'              => 'required|min:4',
+    		'email'		            => 'required|email|unique:users',
+            'password'              => 'min:6|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'min:6',
-            'long'      => 'required',
-            'lat'       => 'required',
+            'long'                  => 'required',
+            'lat'                   => 'required',
+            'lokasi_foto'           => 'required',
+            'no_telp'               => 'required'
     	]);
 
         $loc = array('long' => $input->long,
@@ -87,12 +81,12 @@ class AuthController extends Controller
                     'username'      => $input->username,
                     'email'         => $input->email,
                     'password'      => bcrypt($input->password),
-                    'created_loc'   => json_encode($loc)
+                    'created_loc'   => json_encode($loc),
+                    'location'      => $input->lokasi_foto,
+                    'no_telp'       => $input->no_telp
         );
 
         User::create($data);
-
-        // DB::table('users')->insert($data);
 
     	return redirect()->route('login');
     }

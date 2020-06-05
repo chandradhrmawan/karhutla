@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use File;
+use App\User;
 
 class ReportController extends Controller
 {
@@ -14,6 +15,15 @@ class ReportController extends Controller
         $data['page_title'] = 'Report Form';
     	$data['prov']		 = DB::table('provinsi')->get();
     	return view('admin/report_form',$data);
+    }
+
+    public function get_form()
+    {   
+        $data['page_title'] = 'Report Form';
+        $data['prov']        = DB::table('provinsi')->get();
+        $data['user_detail'] = DB::table('users')->where('id',Auth::user()->id)->first();
+        // print_r($data['user_detail']);die;
+        return view('laporan',$data);
     }
 
     public function get_kabupaten($id_prov)
@@ -52,9 +62,10 @@ class ReportController extends Controller
     public function read_image(Request $input)
     {
     	
-        $uid = Auth::user()->id;
+        $uid      = Auth::user()->id;
         $fileName = time().'.'.$input->foto_kebakaran->extension();  
-        $path = public_path().'/uploads/foto_kebakaran/'.$uid;
+        $path     = public_path().'/uploads/foto_kebakaran/'.$uid;
+        $path_db  = 'uploads/foto_kebakaran/'.$uid;
 
         if (!file_exists($path)) {
              File::makeDirectory($path, $mode = 0777, true, true);
@@ -66,7 +77,7 @@ class ReportController extends Controller
             $message = array('status'    => 'success',
                              'message'   => 'success baca file',
                              'location'  => self::get_image_location($path.'/'.$fileName),
-                             'path_foto' => $path.'/'.$fileName
+                             'path_foto' => $path_db.'/'.$fileName
                             );
         }else{
             $message = array('status' => 'fail',
@@ -83,7 +94,6 @@ class ReportController extends Controller
         }
 
         echo $html;
-   
     }
 
     public function get_image_location($image = '')
@@ -134,26 +144,26 @@ class ReportController extends Controller
     public function generate_deskripsi_foto($location,$path_foto)
     {
         $html = '<div class="form-row">
-                      <div class="form-group col-md-3">
+                      <div class="form-group col-md-6">
                         <label>Longitude</label>
                         <input type="text" name="longitude_foto" class="form-control" id="longitude_foto" value="'.$location['longitude'].'">
                       </div>
-                      <div class="form-group col-md-3">
+                      <div class="form-group col-md-6">
                         <label>Latitude</label>
                         <input type="text" name="latitude_foto" class="form-control" id="latitude_foto" value="'.$location['latitude'].'">
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-6">
+                      <div class="form-group col-md-12">
                         <label>Lokasi Foto</label>
                         <input type="text" name="lokasi_foto" class="form-control" id="lokasi_foto">
                         <input type="hidden" name="path_foto" class="form-control" id="path_foto" value="'.$path_foto.'">
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-6">
-                        <label>Keterangan</label>
-                        <input type="text" name="keterangan" class="form-control" id="keterangan">
+                      <div class="form-group col-md-12">
+                        <label>Keterangan<code>*</code></label>
+                        <input type="text" name="keterangan" class="form-control" id="keterangan"><code>Keterangan Foto Kebakaran</code>
                       </div>
                     </div>';
         return $html;
@@ -161,25 +171,29 @@ class ReportController extends Controller
 
     public function submit_form(Request $input)
     {
+ 
         $uid = Auth::user()->id;
         $data=array('id_user'        => $uid,
-                    'first_name'     => $input->first_name,
-                    'last_name'      => $input->last_name,
+                    'jarak'          => $input->jarak,
+                    'name'           => $input->name,
                     'email'          => $input->email,
-                    'phone'          => $input->phone,
-                    'tipe_alamat'    => $input->tipe_alamat,
-                    'alamat_sistem'  => $input->alamat_sistem,
-                    'long_sistem'    => $input->long_sistem,
-                    'lat_sistem'     => $input->lat_sistem,
-                    'provinsi'       => $input->provinsi,
-                    'kabupaten'      => $input->kabupaten,
-                    'kecamatan'      => $input->kecamatan,
-                    'kelurahan'      => $input->kelurahan,
+                    'longitude_user' => $input->longitude_user,
+                    'latitude_user'  => $input->latitude_user,
+                    'no_telp'        => $input->no_telp,
+                    'alamat'         => $input->alamat,
                     'longitude_foto' => $input->longitude_foto,
                     'latitude_foto'  => $input->latitude_foto,
                     'lokasi_foto'    => $input->lokasi_foto,
                     'path_foto'      => $input->path_foto,
                     'keterangan'     => $input->keterangan,
+                    'provinsi'       => $input->provinsi,
+                    'kabupaten'      => $input->kabupaten,
+                    'kecamatan'      => $input->kecamatan,
+                    'kelurahan'      => $input->kelurahan,
+                    'geometry_lat'   => $input->geometry_lat,
+                    'geometry_lng'   => $input->geometry_lng,
+                    'alamat_lengkap' => $input->alamat_lengkap,
+                    'geometry_desc'  => $input->geometry_desc,
                     'tgl_pelaporan'  => date('Y-m-d H:i:s')
         );
 
@@ -196,6 +210,63 @@ class ReportController extends Controller
     {
         $data = DB::table('pelaporan')->get();
         echo json_encode($data);
+    }
 
+    public function get_report_conf()
+    {
+        $conf  = DB::table('master')->where('id',2)->first();
+        $nilai = $conf->nilai;
+
+        $data = DB::table('pelaporan')
+                 ->select(DB::raw('count(*) AS confident,name, geometry_lat,geometry_lng,geometry_desc'))
+                 ->groupBy('geometry_lat','geometry_lng','name','geometry_desc')
+                 ->havingRaw('count(*) >= ?', [$nilai])
+                 ->get();
+
+        echo json_encode($data);
+    }
+
+    public function getDistanceBetween(Request $input) 
+    { 
+        
+        $latitude1  = $input->latitude1;
+        $longitude1 = $input->longitude1;
+        $latitude2  = $input->latitude2;
+        $longitude2 = $input->longitude2;
+        $unit       = $input->unit;
+
+        $theta = $longitude1 - $longitude2; 
+        $distance = (sin(deg2rad($latitude1)) * sin(deg2rad($latitude2)))  + (cos(deg2rad($latitude1)) * cos(deg2rad($latitude2)) * cos(deg2rad($theta))); 
+        $distance = acos($distance); 
+        $distance = rad2deg($distance); 
+        $distance = $distance * 60 * 1.1515; 
+        switch($unit) 
+        { 
+            case 'Mi': break; 
+            case 'Km' : $distance = $distance * 1.609344; 
+        } 
+        return (round($distance,2)); 
+    }
+
+    public function hist_pelaporan($id_user=null)
+    {   
+
+        $data['page_title'] = 'Riwayat Pelaporan';
+        if(empty($id_user)){
+            $data['detail'] = DB::table('pelaporan')->get();
+        }else{
+            $data['detail'] = DB::table('pelaporan')->where('id_user',$id_user)->get();
+        }
+
+        $data['max_pelaporan'] = DB::table('master')->where('id',1)->first();
+
+        return view('hist_pelaporan',$data);
+
+        dd($data['detail']);
+    }
+
+    public function test()
+    {
+        return view('test');
     }
 }
