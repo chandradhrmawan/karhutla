@@ -47,6 +47,7 @@ Route::get('/sumbit_batal/{id_pelaporan}/{alasan_batal}','MasterController@sumbi
 
 Route::get('/get_form','ReportController@get_form');
 Route::get('/get_report_data','ReportController@get_report_data');
+Route::get('/get_data_chart/{year}','AuthController@get_data_chart');
 
 Route::get('/hist_pelaporan/{id_user?}','ReportController@hist_pelaporan')->name('riwayat_lapor');
 

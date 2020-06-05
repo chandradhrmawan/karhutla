@@ -83,8 +83,10 @@
         <div class="card-body">
           <div class="chart">
             <div class="col-md-2" style="float: right;">
-              <select class="form-control">
-                <option>{{date('Y')}}</option>
+              <select class="form-control" id="year_chart" onchange="change_chart_data(this.value)">
+                @foreach($year as $val)
+                  <option <?=($val == date('Y')+0) ? 'selected' : ''?>>{{$val}}</option>
+                @endforeach
               </select>
             </div>
             <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
@@ -258,18 +260,10 @@ $.ajax({
   success:function(data)
   { 
       $.each( data, function( key, value ) {
-
-        for(i=1; i<=value.confident; i++){
-
-          // var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
-          // marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-
           var m = new L.Marker(new L.LatLng(value.geometry_lat,value.geometry_lng));
-          m.bindPopup("<b>Admin321</b><br>Jakarta.");
+          m.bindPopup("<b>"+value.name+"</b><br>"+value.geometry_desc+".");
           markersList.push(m);
           markers.addLayer(m);
-        }
-      
       });
   }
 });
@@ -283,42 +277,72 @@ map.addLayer(markers);
 /*
     chart area
 */
-var areaChartData = {
-labels  : ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-datasets: [
-  {
-    label               : 'Data Pelaporan',
-    backgroundColor     : 'rgba(60,141,188,0.9)',
-    borderColor         : 'rgba(60,141,188,0.8)',
-    pointRadius          : false,
-    pointColor          : '#3b8bba',
-    pointStrokeColor    : 'rgba(60,141,188,1)',
-    pointHighlightFill  : '#fff',
-    pointHighlightStroke: 'rgba(60,141,188,1)',
-    // data                : [28, 48, 40, 19, 86, 27, 90, 20, 15, 45, 35, 60]
-    data  : {{$result_bar}}
+change_chart_data();
+function change_chart_data(year=null)
+{
+  if(year){
+    
+    var url = location.origin+'/get_data_chart/'+year;
+    $.ajax({
+      url:url,
+      method:"GET",
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      dataType:"json",
+      success:function(data)
+      { 
+          fill_chart(data)
+      }
+    });
+
+  }else{
+    fill_chart({{$result_bar}});
+  } 
+}
+
+
+function fill_chart(data_chat)
+{
+  var areaChartData = {
+  labels  : ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+  datasets: [
+    {
+      label               : 'Data Pelaporan',
+      backgroundColor     : 'rgba(60,141,188,0.9)',
+      borderColor         : 'rgba(60,141,188,0.8)',
+      pointRadius          : false,
+      pointColor          : '#3b8bba',
+      pointStrokeColor    : 'rgba(60,141,188,1)',
+      pointHighlightFill  : '#fff',
+      pointHighlightStroke: 'rgba(60,141,188,1)',
+      // data                : [28, 48, 40, 19, 86, 27, 90, 20, 15, 45, 35, 60]
+      data  : data_chat
+    }
+  ]
   }
-]
+
+  var barChartCanvas = $('#barChart').get(0).getContext('2d')
+  var barChartData = jQuery.extend(true, {}, areaChartData)
+  var temp0 = areaChartData.datasets[0]
+  // var temp1 = areaChartData.datasets[1]
+  // barChartData.datasets[0] = temp1
+  barChartData.datasets[0] = temp0
+
+  var barChartOptions = {
+    responsive              : true,
+    maintainAspectRatio     : false,
+    datasetFill             : false
+  }
+
+  var barChart = new Chart(barChartCanvas, {
+    type: 'bar', 
+    data: barChartData,
+    options: barChartOptions
+  });
 }
 
-var barChartCanvas = $('#barChart').get(0).getContext('2d')
-var barChartData = jQuery.extend(true, {}, areaChartData)
-var temp0 = areaChartData.datasets[0]
-// var temp1 = areaChartData.datasets[1]
-// barChartData.datasets[0] = temp1
-barChartData.datasets[0] = temp0
 
-var barChartOptions = {
-  responsive              : true,
-  maintainAspectRatio     : false,
-  datasetFill             : false
-}
-
-var barChart = new Chart(barChartCanvas, {
-  type: 'bar', 
-  data: barChartData,
-  options: barChartOptions
-});
 
 </script>
 

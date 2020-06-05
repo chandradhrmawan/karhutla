@@ -217,13 +217,24 @@ class ReportController extends Controller
         $conf  = DB::table('master')->where('id',2)->first();
         $nilai = $conf->nilai;
 
-        $data = DB::table('pelaporan')
-                 ->select(DB::raw('count(*) AS confident,name, geometry_lat,geometry_lng,geometry_desc'))
-                 ->groupBy('geometry_lat','geometry_lng','name','geometry_desc')
+        $data_head = DB::table('pelaporan')
+                 ->select(DB::raw('count(*) AS confident, geometry_lat,geometry_lng,geometry_desc'))
+                 ->groupBy('geometry_lat','geometry_lng','geometry_desc')
                  ->havingRaw('count(*) >= ?', [$nilai])
                  ->get();
 
-        echo json_encode($data);
+        foreach ($data_head as $key => $value) {
+            $detail = DB::table('pelaporan')
+                         ->where('geometry_lat',$value->geometry_lat)
+                         ->where('geometry_lng',$value->geometry_lng)
+                         ->get();
+
+            foreach ($detail as $key => $value) {
+                $results[] = $value;
+            }
+        }
+
+        echo json_encode($results);
     }
 
     public function getDistanceBetween(Request $input) 
@@ -261,8 +272,6 @@ class ReportController extends Controller
         $data['max_pelaporan'] = DB::table('master')->where('id',1)->first();
 
         return view('hist_pelaporan',$data);
-
-        dd($data['detail']);
     }
 
     public function test()
