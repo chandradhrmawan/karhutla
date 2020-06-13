@@ -7,11 +7,13 @@
 <style type="text/css">
 #map { height: 500px; }
 
+#map1 { height: 500px; }
+
 #map_m { position:absolute; top:0px; bottom:0px; width:100%; }
 
 .my-custom-scrollbar {
   position: relative;
-  height: 500px;
+  height: 614px;
   overflow: auto;
 }
 .table-wrapper-scroll-y {
@@ -21,6 +23,8 @@
 .form-control{
   border-radius: 0px !important;
 }
+
+/*.tableFixHead thead th { position: sticky; top: 0; }*/
 </style>
 
 
@@ -33,8 +37,22 @@
           <div class="card-header">
               <h3 class="card-title">Map</h3>
           </div>
-          <div class="card-body">
+          <div class="card-body" >
+            <div class="col-md-5" style="float: center;">
+            <div class="form-group">
+              {{-- <input type="number" name="no_telp" class="form-control" id="no_telp"> --}}
+              <div class="d-flex justify-content-center my-4">
+                <div class="w-100">
+                  <label>Tingkat Confidendce</label>
+                  <input onchange="change_conf(this)" type="range" class="custom-range" id="customRange11" min="0" max="100" step="5">
+                </div>
+                <span class="font-weight-bold text-primary ml-2 valueSpan2"></span>
+              </div>
+            </div>
+            </div>
+            <div class="container-map">
   	         <div id="map"></div>
+            </div>
           </div>
       </div>
     </div>
@@ -44,21 +62,27 @@
        <div class="card-header">
           <h3 class="card-title">Colaborator</h3>
         </div>
-         <div class="card-body">
+         <div class="card-body" style="height: 645px !important;">
           <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
-          <table class="table table-bordered table-striped mb-0">
+          <table class="table table-bordered table-striped mb-0 header-fixed example2">
+           <thead>
             <tr>
+              <th>No</th>
               <th>Nama</th>
               <th>Info</th>
               <th>Waktu</th>
             </tr>
+            </thead>
+            <tbody>
             @foreach($colabolator as $key => $value)
             <tr>
+              <td>{{$key+1}}</td>
               <td>{{$value->name}}</td>
               <td>{{$value->keterangan}}</td>
               <td>{{$value->tgl_pelaporan}}</td>
             </tr>
             @endforeach
+          </tbody>
           </table>
           </div>
           </div>
@@ -112,7 +136,7 @@
             <!-- /.card-header -->
             <div class="card-body">
               <div class="table-responsive">
-              <table id="example1" class="table table-bordered table-striped">
+              <table class="table table-bordered table-striped example1">
                 <thead>
                 <tr>
                   <th>No</th>
@@ -195,89 +219,66 @@
 
 <script type="text/javascript">
 $(function () {
-  $('#example1').DataTable({
+  $('.example1').DataTable({
   "paging": true,
   "lengthChange": true,
   "searching": true,
   "ordering": true,
-  "info": true,
+  "info": false,
   "autoWidth": true,
-  "responsive": true,
+  "responsive": false,
   });
-});
 
-/*start map*/
-/*var long = 113.9213257;
-var lat  = -0.789275;
-var zoom = 5;
-var mymap = L.map('mapid').setView([lat, long], zoom);
-var apikey = 'pk.eyJ1IjoiY2hhbmRyYWRhcm1hd2FuMTciLCJhIjoiY2s5OGp6MWxxMDJ6bDNtbW5ndWtpeTR1MiJ9.dOWewSSFZpkoosXlkf99Pg';
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-  maxZoom: 18,
-  id: 'mapbox/light-v9',
-  tileSize: 512,
-  zoomOffset: -1,
-  accessToken: apikey
-}).addTo(mymap);
-*/
-//add marker
-// var marker = L.marker([-6.173110,106.829361]).addTo(mymap);
-// marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-/*var popup = L.popup()
-    .setLatLng([51.5, -0.09])
-    .setContent("I am a standalone popup.")
-    .openOn(mymap);*/
+  $('.example2').DataTable({
+  "paging": false,
+  "lengthChange": false,
+  "searching": false,
+  "ordering": true,
+  "info": false,
+  "autoWidth": true,
+  "responsive": false,
+  });
 
 
-/*add cluster marker*/
-var apikey = 'pk.eyJ1IjoiY2hhbmRyYWRhcm1hd2FuMTciLCJhIjoiY2s5OGp6MWxxMDJ6bDNtbW5ndWtpeTR1MiJ9.dOWewSSFZpkoosXlkf99Pg';
-var cloudmade = new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-  maxZoom: 18,
-  id: 'mapbox/light-v9',
-  tileSize: 512,
-  zoomOffset: -1,
-  accessToken: apikey
-});
+  $('.valueSpan2').val(20);
+  $('#customRange11').val(20);
 
-var lat  = -0.789275;
-var long = 113.9213257;
-var latlng = new L.LatLng(lat, long);
+  const $valueSpan = $('.valueSpan2');
+  const $value = $('#customRange11');
+  $valueSpan.html($value.val()+'%');
 
-var map = new L.Map('map', {center: latlng, zoom: 5, layers: [cloudmade]});
+  generate_map(20);
+  change_chart_data();
 
-var markers = new L.MarkerClusterGroup();
-var markersList = [];
-
-/*get data user report*/
-var url = location.origin+'/get_report_conf';
-$.ajax({
-  url:url,
-  method:"GET",
-  headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-  },
-  dataType:"json",
-  success:function(data)
-  { 
-      $.each( data, function( key, value ) {
-          var m = new L.Marker(new L.LatLng(value.geometry_lat,value.geometry_lng));
-          m.bindPopup("<b>"+value.name+"</b><br>"+value.geometry_desc+".");
-          markersList.push(m);
-          markers.addLayer(m);
-      });
-  }
 });
 
 
-map.addLayer(markers);
-/*end cluster marker*/
-// L.geoJson(indoData).addTo(map);
-/*end map*/
+function generate_map(conf)
+{
+    var url = location.origin+'/generate_map/'+conf;
+    $.ajax({
+      url:url,
+      method:"GET",
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      // dataType:"json",
+      success:function(data)
+      { 
+        $('.container-map').html(data);
+        unblock_page();
+      }
+  });
+}
 
-/*
-    chart area
-*/
-change_chart_data();
+function change_conf(param)
+{
+  block_page();
+  var persen = param.value;
+  $('.valueSpan2').html(persen+'%');
+  generate_map(persen);
+}
+
 function change_chart_data(year=null)
 {
   if(year){
@@ -341,8 +342,6 @@ function fill_chart(data_chat)
     options: barChartOptions
   });
 }
-
-
 
 </script>
 

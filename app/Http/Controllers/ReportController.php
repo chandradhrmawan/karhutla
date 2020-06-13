@@ -7,6 +7,7 @@ use Auth;
 use DB;
 use File;
 use App\User;
+use App\Helpers\GlobalHelers;
 
 class ReportController extends Controller
 {
@@ -212,10 +213,11 @@ class ReportController extends Controller
         echo json_encode($data);
     }
 
-    public function get_report_conf()
+    public function get_report_conf($persen=0)
     {
-        $conf  = DB::table('master')->where('id',2)->first();
+        $conf  = DB::table('presentase')->where('persen',$persen)->first();
         $nilai = $conf->nilai;
+        $results = [];
 
         $data_head = DB::table('pelaporan')
                  ->select(DB::raw('count(*) AS confident, geometry_lat,geometry_lng,geometry_desc'))
@@ -264,9 +266,46 @@ class ReportController extends Controller
 
         $data['page_title'] = 'Riwayat Pelaporan';
         if(empty($id_user)){
-            $data['detail'] = DB::table('pelaporan')->get();
+            $data['pelaporan'] = DB::table('pelaporan')->orderBy('id_pelaporan', 'desc')->get();
         }else{
-            $data['detail'] = DB::table('pelaporan')->where('id_user',$id_user)->get();
+            $data['pelaporan'] = DB::table('pelaporan')->where('id_user',$id_user)->orderBy('id_pelaporan', 'desc')->get();
+        }
+
+        foreach ($data['pelaporan'] as $key => $value) {
+            $ress['id_pelaporan']   = $value->id_pelaporan; 
+            $ress['id_user']        = $value->id_user; 
+            $ress['tgl_pelaporan']  = $value->tgl_pelaporan; 
+            $ress['name']           = $value->name; 
+            $ress['email']          = $value->email; 
+            $ress['longitude_user'] = $value->longitude_user; 
+            $ress['latitude_user']  = $value->latitude_user; 
+            $ress['no_telp']        = $value->no_telp; 
+            $ress['alamat']         = $value->alamat; 
+
+            if(!empty($value->geometry_lat)){
+                $ress['kebakaran_lat']  = $value->geometry_lat; 
+                $ress['kebakaran_lng']  = $value->geometry_lng; 
+                $ress['kebakaran_desc'] = $value->geometry_desc;
+                $ress['jml_conf']       = GlobalHelers::get_jml_conf($ress,'geometry');  
+            }else{
+                $ress['kebakaran_lat']  = $value->longitude_foto; 
+                $ress['kebakaran_lng']  = $value->latitude_foto; 
+                $ress['kebakaran_desc'] = $value->lokasi_foto;
+                $ress['jml_conf']       = GlobalHelers::get_jml_conf($ress,'photo'); 
+            }
+
+            $ress['path_foto']      = $value->path_foto; 
+            $ress['keterangan']     = $value->keterangan;  
+            $ress['provinsi']       = $value->provinsi; 
+            $ress['kabupaten']      = $value->kabupaten; 
+            $ress['kecamatan']      = $value->kecamatan; 
+            $ress['kelurahan']      = $value->kelurahan; 
+
+            $ress['alamat_lengkap'] = $value->alamat_lengkap; 
+            $ress['jarak']          = $value->jarak; 
+            $ress['alasan_batal']   = $value->alasan_batal;             
+            $ress['status']         = $value->status;
+            $data['detail'][]       = (object)$ress;       
         }
 
         $data['max_pelaporan'] = DB::table('master')->where('id',1)->first();

@@ -31,7 +31,7 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
 
       <div class="card card-info">
 
@@ -43,7 +43,7 @@
             <div class="card-body">
               <div class="table-responsive">
               {{-- <caption><code>Tinggat Confidence</code></caption> --}}
-              <table id="example1" class="table table-bordered table-striped">
+              <table class="table table-bordered table-striped example1">
                 <thead>
                 <tr>
                   <th>No</th>
@@ -68,6 +68,42 @@
     </div>
   </div>
 </div>
+{{-- </div>
+      <div class="row"> --}}
+        <div class="col-md-6">
+          <div class="card card-info">
+
+          <div class="card-header">
+              <h3 class="card-title">Master Presentase</h3>
+          </div>
+          <div class="card-body">
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div class="table-responsive">
+              {{-- <caption><code>Tinggat Confidence</code></caption> --}}
+              <table class="table table-bordered table-striped example1">
+                <thead>
+                <tr>
+                  <th>Persen</th>
+                  <th>Nilai</th>
+                  <th style="text-align: center;">Aksi</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($detail2 as $key => $value)
+                <tr>
+                  <td>{{$value->persen}} % </td>
+                  <td>{{$value->nilai}} - Orang</td>
+                  <td style="text-align: center;"><a href="#" onclick="edit_data_persen({{$value->id}})"><span class="fa fa-edit"></span></a></td>
+                </tr>
+                @endforeach
+                </tbody>
+              </table>
+          </div>
+      </div>
+    </div>
+  </div>
+        </div>
 </div>
 </div>
 
@@ -97,7 +133,7 @@
      
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" id="btn-act" class="btn btn-primary" onclick="update_data()">Submit</button>
+        <button type="button" id="btn-act" class="btn btn-primary" onclick="update_data()" value="">Submit</button>
       </div>
     </div>
   </div>
@@ -113,7 +149,7 @@
 
 <script type="text/javascript">
 $(function () {
-  $('#example1').DataTable({
+  $('.example1').DataTable({
   "paging": true,
   "lengthChange": true,
   "searching": true,
@@ -141,6 +177,7 @@ function edit_data(id)
         console.log(ress);
         $('#id').val(ress[0].id);
         $('#nilai').val(ress[0].nilai);
+        $('#btn-act').val('master');
       },
       error: function(error)
       {
@@ -153,7 +190,12 @@ function update_data()
 {
   var id    = $('#id').val();
   var nilai = $('#nilai').val();
-  var url = location.origin+'/update_master_data/'+id+'/'+nilai;
+  var act   = $('#btn-act').val();
+  if(act == 'master'){
+    var url = location.origin+'/update_master_data/'+id+'/'+nilai;
+  }else{
+    var url = location.origin+'/update_master_presentase/'+id+'/'+nilai;
+  } 
   $.ajax(
   {
     type: "GET",
@@ -171,6 +213,29 @@ function update_data()
   });
 }
 
+function edit_data_persen(id)
+{
+  $('#modal_form').modal('show');
+  $('.modal-title').text('Master Presentase'); 
+  var url = location.origin+'/get_master_presentase/'+id;
+  $.ajax(
+  {
+    type: "GET",
+      url: url,
+      dataType:"json",
+      success: function(ress) 
+      { 
+        console.log(ress);
+        $('#id').val(ress[0].id);
+        $('#nilai').val(ress[0].nilai);
+        $('#btn-act').val('presentase');
+      },
+      error: function(error)
+      {
+        alert(error);
+      }
+  });
+}
 
 
 </script>

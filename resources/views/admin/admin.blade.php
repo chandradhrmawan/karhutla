@@ -103,6 +103,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{ asset('lte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('lte/dist/js/adminlte.min.js') }}"></script>
+<script src="{{ asset('lte/dist/js/block-ui.js') }}"></script>
 <!-- DataTables -->
 <script src="{{asset('lte/plugins/datatables/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>

@@ -15,13 +15,16 @@
           <li class="nav-item">
             <a href="{{ route('home') }}" class="nav-link">Home</a>
           </li>
-          <li class="nav-item">
-            {{-- <a href="{{ route('report') }}" class="nav-link">Submit Report</a> --}}
-            <a href="#" class="nav-link" onclick="modal_form()">Submit Report</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('riwayat_lapor', ['id_user' => Auth::user()->id]) }}" class="nav-link">Riwayat Pelaporan</a>
-          </li>
+          @isset(Auth::user()->id)
+            <li class="nav-item">
+              <a href="#" class="nav-link" onclick="modal_form()">Submit Report</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('riwayat_lapor', ['id_user' => Auth::user()->id]) }}" class="nav-link">Riwayat Pelaporan</a>
+            </li>
+          @endisset
+
+          @isset(Auth::user()->id)
           <li class="nav-item dropdown">
             <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Pengaturan</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
@@ -54,6 +57,7 @@
               
             </ul>
           </li>
+           @endisset
         </ul>
 
         <!-- SEARCH FORM -->
@@ -72,6 +76,7 @@
       <!-- Right navbar links -->
       <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
         <!-- Notifications Dropdown Menu -->
+        @if(isset(Auth::user()->id))
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             {{ Auth::user()->name }} <i class="fas fa-user"></i>
@@ -98,6 +103,19 @@
              <a href="{{ route('logout') }}" class="dropdown-item dropdown-footer">Logout</a>
           </div>
         </li>
+        @else
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+          Masuk <i class="fas fa-edit"></i>
+            {{-- <span class="badge badge-warning navbar-badge">15</span> --}}
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <div class="dropdown-divider"></div>
+             <a href="{{ route('register') }}" class="dropdown-item dropdown-footer">Daftar</a>
+             <a href="{{ route('login') }}" class="dropdown-item dropdown-footer">Masuk</a>
+          </div>
+        </li>
+        @endif
         {{-- <li class="nav-item">
           <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button"><i
               class="fas fa-th-large"></i></a>

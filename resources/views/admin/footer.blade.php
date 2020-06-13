@@ -26,4 +26,18 @@ $.ajax(
     }
  });
 }
+
+function block_page(message=null)
+{   
+    if(message == "" || message == null){
+        $.blockUI();
+    }else{
+        $.blockUI({ message: '<h1>'+message+'</h1>' });
+    }
+}
+
+function unblock_page()
+{
+    $.unblockUI();
+}
 </script>

@@ -63,6 +63,7 @@
                   <th>Keterangan</th>
                   <th>Foto</th>
                   <th>Jarak</th>
+                  <th>Jumlah Confident</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -71,26 +72,26 @@
                 @foreach($detail as $key => $value)
                   @php
                     if($value->jarak > $max_pelaporan->nilai){
-                      $status = '<span class="badge badge-danger">Jarak Terlalu Jauh</span>';
+                      $status = '<span class="badge badge-danger">Jarak Anda Dengan Lokasi Foto Terlalu Jauh</span>';
+                    }elseif ($value->status == 7) {
+                      $status = '<span class="badge badge-secondary">Pelaporan Di Batalkan</span><code>'.$value->alasan_batal.'</code>';
                     }else{
                       $status = '<span class="badge badge-success">Diterima</span>';
                     }
 
-                    if($value->status == 7){
-                      $status = '<span class="badge badge-secondary">Pelaporan Di Batalkan</span>';
-                    }
                   @endphp
                 <tr>
                   <td>{{$key+1}}</td>
                   <td>{{$value->name}}</td>
                   <td>{{$value->alamat}}</td>
                   <td>{{$value->tgl_pelaporan}}</td>
-                  <td>{{$value->geometry_lng}}</td>
-                  <td>{{$value->geometry_lat}}</td>
-                  <td>{{$value->geometry_desc}}</td>
+                  <td>{{$value->kebakaran_lat}}</td>
+                  <td>{{$value->kebakaran_lng}}</td>
+                  <td>{{$value->kebakaran_desc}}</td>
                   <td>{{$value->keterangan}}</td>
                   <td><img src="{{ asset($value->path_foto) }}" width="100" height="100"></td>
                   <td>{{$value->jarak}} Km</td>
+                  <td>{{$value->jml_conf}} Orang</td>
                   <td><?=$status?></td>
                   <td><a href="#" onclick="batal_lapor({{$value->id_pelaporan}})" class="a-black"><span class="fa fa-trash"></span> Batal Lapor</a></td>
                 </tr>

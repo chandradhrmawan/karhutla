@@ -15,6 +15,7 @@ class MasterController extends Controller
     {
     	$data['page_title'] = 'Master Data';
     	$data['detail'] 	= DB::table('master')->get();
+        $data['detail2']     = DB::table('presentase')->get();
     	return view('admin/master_data',$data);
     }
 
@@ -24,9 +25,23 @@ class MasterController extends Controller
     	return $data;
     }
 
+    public function get_master_presentase($id)
+    {
+        $data = DB::table('presentase')->where('id',$id)->get();
+        return $data;
+    }
+
     public function update_master_data($id,$nilai)
     {
     	DB::table('master')
+          ->where('id', $id)
+          ->update(['nilai' => $nilai]);
+        return true;
+    }
+
+    public function update_master_presentase($id,$nilai)
+    {
+        DB::table('presentase')
           ->where('id', $id)
           ->update(['nilai' => $nilai]);
         return true;

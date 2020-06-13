@@ -165,7 +165,7 @@
         <div class="card-header" role="tab" id="headingTwo">
           <h5 class="mb-0">
             <a class="collapsed a-white" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              Verifikasi Lokasi <code>*</code>
+              Verifikasi Lokasi <code>(Opsional Jika Lokasi Foto Tidak Akurat Silahkah Isi Lokasi)</code>
             </a>
           </h5>
         </div>
@@ -545,10 +545,18 @@
     var url         = location.origin+'/get_distance';
     var latitude1   = $('#latitude_user').val();
     var longitude1  = $('#longitude_user').val();
-    var latitude2   = $('#geometry_lat').val();
-    var longitude2  = $('#geometry_lng').val();
-    var unit        = 'Km';
+    var latitude2   = "";
+    var longitude2  = "";
+    var unit        = "Km";
 
+    if($('#geometry_lat').val()=="" || $('#geometry_lng').val()==""){
+      var latitude2   = $('#latitude_foto').val();
+      var longitude2  = $('#longitude_foto').val();
+    }else{
+      var latitude2   = $('#geometry_lat').val();
+      var longitude2  = $('#geometry_lng').val();
+    }
+    
     $.ajax({
           url:url,
           method:"POST",
